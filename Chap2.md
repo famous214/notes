@@ -153,10 +153,49 @@ int main()
   cout << "#27char:" << char(27) << endl;	//输出ASCII码表中编号为27的符号
   ```
 
-  ​
+### 2-3-4. namespace——道不同，不相为谋
+
+现在程序开发早就过了那种单打独斗，一个人就可以撑起一个软件的年代，大家讲求都是团队合作、协同开发。既然多人分工，就难免出现“撞车”问题。比如，某甲和某乙都觉得nTotalNumber这名字好，于是就在各自负责的那部分里以此为名创建了一个全局变量：
+
++ moujia.cpp：
+
+  ```C++
+  int nTotalNumber = 23333333;
+  ```
+
++ mouyi.cpp
+
+  ```C++
+  int nTotalNumber = 6666666;
+  ```
+
+他们在各自的单元测试中都没发现任何问题，结果合并代码一编译——链接器懵逼了：嗨呀，你们给我搞出了两个全局变量还叫一模一样的名字？！一方面，不可能给变量、函数取个名字还注册个专利；另一方面，也不可能用其他方式区分（别提什么moujia_nTotalNumber或者moujia_nTotalNumber_201709120043之类的，一来即便如此也无法完全保证没有重复的，二来这种命名，怕是不想干这行了出来报复社会的吧）。估计写C++编译器那帮人也遇到这问题了，所以他们就搞出来一个namespace。不同的人将各自的代码写到不同的namespace中，使用时加上namespace名称，也就解决冲突了。比如：
+
+```CPP
+namespace zhangsan
+{
+    int nTotalNumber = 23333333;
+}
+
+namespace lisi
+{
+    int nTotalNumber = 6666666;
+}
+
+int nTryCount = lisi::nTotalNumber + 1;
+int nErrorCount = zhangsan::nTotalNumber + 1;
+```
+
+由于写标准库的那部分人也害怕他们在标准库中定义的符号名与使用者定义的符号名撞车~~，导致郁闷至极的使用者拿着刀在他们家门口准备砍人（大雾）~~便决定将C++标准库的代码全部封装到一个名为std的命名空间中。
+
+有如下方式使用该命名空间中的内容：
+
++ 完全打开：using namespace std;  则std命名空间下的所有符号名今后都可以毫无忌惮地使用了
++ 部分打开：using std::cout; 则将std命名空间下的cout暴露出来，但其他部分仍然没有暴露出来
++ 指名道姓： std::cout << "Hello world" << std::endl; 在使用时在作用域标识符前指明其所属的命名空间
 
 
-### 2-3-4.  vector——有容乃大
+### 2-3-5.  vector——有容乃大
 
 vector是C++标准库提供的一个有序线性存储的容器，本质上是一个模板类。有如下常用套路：
 
